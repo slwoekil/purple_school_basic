@@ -18,32 +18,29 @@ func main() {
 func calculateChangedCurrency(currencyForChange string, receivedCurrency string, countCurrency float64) {
 	var exchange string
 
-	switch {
-	case currencyForChange == "EUR" && receivedCurrency == "USD":
-		exchange = fmt.Sprintf("Сумма к получению: %.2f", countCurrency/USDtoEUR)
-		fmt.Println(exchange, receivedCurrency)
-	case currencyForChange == "EUR" && receivedCurrency == "RUB":
-		exchange = fmt.Sprintf("Сумма к получению: %.2f", EURtoRUB*countCurrency)
-		fmt.Println(exchange, receivedCurrency)
-	case currencyForChange == "EUR" && receivedCurrency == "EUR":
-		fmt.Println("Вы выбрали две одинаковые валюты")
-	case currencyForChange == "USD" && receivedCurrency == "EUR":
-		exchange = fmt.Sprintf("Сумма к получению: %.2f", USDtoEUR*countCurrency)
-		fmt.Println(exchange, receivedCurrency)
-	case currencyForChange == "USD" && receivedCurrency == "RUB":
-		exchange = fmt.Sprintf("Сумма к получению: %.2f", USDtoRUB*countCurrency)
-		fmt.Println(exchange, receivedCurrency)
-	case currencyForChange == "USD" && receivedCurrency == "USD":
-		fmt.Println("Вы выбрали две одинаковые валюты")
-	case currencyForChange == "RUB" && receivedCurrency == "EUR":
-		exchange = fmt.Sprintf("Сумма к получению: %.2f", countCurrency/EURtoRUB)
-		fmt.Println(exchange, receivedCurrency)
-	case currencyForChange == "RUB" && receivedCurrency == "USD":
-		exchange = fmt.Sprintf("Сумма к получению: %.2f", countCurrency/USDtoRUB)
-		fmt.Println(exchange, receivedCurrency)
-	case currencyForChange == "RUB" && receivedCurrency == "RUB":
-		fmt.Println("Вы выбрали две одинаковые валюты")
+	if currencyForChange == receivedCurrency {
+		fmt.Println("Вы выбрали одинаковые валюты")
+		return
 	}
+
+	exchangeRates := map[string]map[string]float64{
+		"EUR": map[string]float64{
+			"USD": countCurrency / USDtoEUR,
+			"RUB": EURtoRUB * countCurrency,
+		},
+		"USD": map[string]float64{
+			"EUR": USDtoEUR * countCurrency,
+			"RUB": USDtoRUB * countCurrency,
+		},
+		"RUB": map[string]float64{
+			"EUR": countCurrency / EURtoRUB,
+			"USD": countCurrency / USDtoRUB,
+		},
+	}
+
+	userCurrency := exchangeRates[currencyForChange]
+	exchange = fmt.Sprintf("Сумма к получению: %.2f", userCurrency[receivedCurrency])
+	fmt.Println(exchange, receivedCurrency)
 }
 
 func getCurrencyForChange() string {
